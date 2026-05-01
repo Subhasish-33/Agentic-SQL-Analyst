@@ -1,0 +1,39 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agentic-sql-analyst-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/agentic_sql_analyst
+      VECTOR_DB_PATH: /app/chroma_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chroma_db:/app/chroma_db
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: agentic-sql-analyst-postgres
+    environment:
+      POSTGRES_DB: agentic_sql_analyst
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./tests/fixtures/sample_schema.sql:/docker-entrypoint-initdb.d/001_sample_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d agentic_sql_analyst"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
