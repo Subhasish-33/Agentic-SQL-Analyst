@@ -8,9 +8,7 @@ Architecture diagram:
 
 ![Agentic SQL Analyst architecture](docs/assets/agentic_sql_analyst_architecture.svg)
 
-Repository reference screenshot:
 
-![Repository reference screenshot](docs/assets/repo_reference_screenshot.png)
 
 ## What Changed
 
